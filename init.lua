@@ -102,7 +102,7 @@ vim.g.have_nerd_font = false
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -161,6 +161,9 @@ vim.opt.scrolloff = 10
 -- See `:help 'confirm'`
 vim.opt.confirm = true
 
+vim.opt.tabstop = 2
+vim.opt.shiftwidth = 2
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -193,6 +196,9 @@ vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left wind
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+vim.keymap.set('n', '<leader>w-', '<C-w>s', { desc = 'Create split below' })
+vim.keymap.set('n', '<leader>w|', '<C-w>v', { desc = 'Create split right' })
+vim.keymap.set('n', '<leader>wd', '<C-w>c', { desc = 'Delete Window' })
 
 -- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
 -- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
@@ -406,6 +412,7 @@ require('lazy').setup({
         -- },
         -- pickers = {}
         extensions = {
+
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
           },
@@ -676,6 +683,11 @@ require('lazy').setup({
         -- ts_ls = {},
         --
 
+        ruff = {
+          ruff = {
+            hoverProvider = false,
+          },
+        },
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
@@ -708,6 +720,10 @@ require('lazy').setup({
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
+        'gopls',
+        'ruff',
+        'pyright',
+        'jsonls',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -873,20 +889,14 @@ require('lazy').setup({
     -- change the command in the config to whatever the name of that colorscheme is.
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'folke/tokyonight.nvim',
+    'catppuccin/nvim',
+    name = 'catppuccin',
     priority = 1000, -- Make sure to load this before all the other start plugins.
     config = function()
-      ---@diagnostic disable-next-line: missing-fields
-      require('tokyonight').setup {
-        styles = {
-          comments = { italic = false }, -- Disable italics in comments
-        },
-      }
-
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
+      vim.cmd.colorscheme 'catppuccin-mocha'
     end,
   },
 
@@ -910,6 +920,8 @@ require('lazy').setup({
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
       require('mini.surround').setup()
+      require('mini.pairs').setup()
+      require('mini.bufremove').setup()
 
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
@@ -976,7 +988,7 @@ require('lazy').setup({
   --    This is the easiest way to modularize your config.
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
   --
   -- For additional information with loading, sourcing and examples see `:help lazy.nvim-🔌-plugin-spec`
   -- Or use telescope!
