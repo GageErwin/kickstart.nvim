@@ -144,8 +144,8 @@ vim.opt.splitbelow = true
 -- Sets how neovim will display certain whitespace characters in the editor.
 --  See `:help 'list'`
 --  and `:help 'listchars'`
-vim.opt.list = true
-vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+-- vim.opt.list = true
+-- vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = 'split'
@@ -543,7 +543,7 @@ require('lazy').setup({
           map('gra', vim.lsp.buf.code_action, '[G]oto Code [A]ction', { 'n', 'x' })
 
           -- Find references for the word under your cursor.
-          map('grr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
+          map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
 
           -- Jump to the implementation of the word under your cursor.
           --  Useful when your language has ways of declaring types without an actual implementation.
@@ -552,7 +552,7 @@ require('lazy').setup({
           -- Jump to the definition of the word under your cursor.
           --  This is where a variable was first declared, or where a function is defined, etc.
           --  To jump back, press <C-t>.
-          map('grd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
+          map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
 
           -- WARN: This is not Goto Definition, this is Goto Declaration.
           --  For example, in C this would take you to the header.
@@ -683,6 +683,41 @@ require('lazy').setup({
         -- ts_ls = {},
         --
 
+        gopls = {
+          gopls = {
+            gofumpt = true,
+            codelenses = {
+              gc_details = false,
+              generate = true,
+              regenerate_cgo = true,
+              run_govulncheck = true,
+              test = true,
+              tidy = true,
+              upgrade_dependency = true,
+              vendor = true,
+            },
+            hints = {
+              assignVariableTypes = true,
+              compositeLiteralFields = true,
+              compositeLiteralTypes = true,
+              constantValues = true,
+              functionTypeParameters = true,
+              parameterNames = true,
+              rangeVariableTypes = true,
+            },
+            analyses = {
+              nilness = true,
+              unusedparams = true,
+              unusedwrite = true,
+              useany = true,
+            },
+            usePlaceholders = true,
+            completeUnimported = true,
+            staticcheck = true,
+            directoryFilters = { '-.git', '-.vscode', '-.idea', '-.vscode-test', '-node_modules' },
+            semanticTokens = true,
+          },
+        },
         ruff = {
           ruff = {
             hoverProvider = false,
@@ -776,6 +811,8 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
+        python = { 'ruff' },
+        go = { 'gofumpt', 'goimports' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
@@ -817,6 +854,7 @@ require('lazy').setup({
         opts = {},
       },
       'folke/lazydev.nvim',
+      'giuxtaposition/blink-cmp-copilot',
     },
     --- @module 'blink.cmp'
     --- @type blink.cmp.Config
@@ -858,13 +896,14 @@ require('lazy').setup({
       completion = {
         -- By default, you may press `<c-space>` to show the documentation.
         -- Optionally, set `auto_show = true` to show the documentation after a delay.
-        documentation = { auto_show = false, auto_show_delay_ms = 500 },
+        documentation = { auto_show = true, auto_show_delay_ms = 500 },
       },
 
       sources = {
-        default = { 'lsp', 'path', 'snippets', 'lazydev' },
+        default = { 'lsp', 'path', 'snippets', 'lazydev', 'copilot' },
         providers = {
           lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
+          copilot = { name = 'copilot', module = 'blink-cmp-copilot', score_offset = 100, async = true },
         },
       },
 
